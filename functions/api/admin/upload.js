@@ -14,5 +14,5 @@ export async function onRequest(context) {
     const botApi = new Api(tgBotToken);
     const response = await botApi.sendPhoto(tgChannelID, new InputFile(file), {caption: `${crypto.randomUUID()}.${fileExt}`});
     await botApi.sendMessage(tgChannelID, `${fileName}:${description}`);
-    return Response(response.photo);
+    return new Response(response.photo);
 }
