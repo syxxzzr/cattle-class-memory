@@ -1,6 +1,6 @@
 import { Api, InputFile } from "grammy";
 
-export async function onRequestPost(context) {
+export async function onRequest(context) {
     const { request, env, params, waitUntil, next, data } = context;
     const tgBotToken = env.tgBotToken;
     const tgChannelID = env.tgChannelID;
