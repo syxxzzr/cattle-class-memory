@@ -3,8 +3,8 @@ export async function onRequest(context) {
     let keyList = [];
     let keyData = { list_complete: false, cursor: undefined };
     try {
-        while (keyData.list_complete) {
-            keyData = await env.KVSpace.list();
+        while (!keyData.list_complete) {
+            keyData = await env.KVSpace.list({ cursor: keyData.cursor });
             keyList = keyList.concat(keyData.keys);
         }
     } catch (err) {
