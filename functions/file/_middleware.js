@@ -6,7 +6,7 @@ export function onRequest(context) {
         if (!ok)
             return errResponse;
     }
-    const assessKey = context.request.headers.get('Assess-Key');
+    const assessKey = context.request.headers.get('Access-Key');
     let { ok, errResponse } = auth(assessKey, context.env.accessKey);
     if (!ok)
         return errResponse;

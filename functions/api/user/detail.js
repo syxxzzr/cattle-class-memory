@@ -14,6 +14,9 @@ export async function onRequest(context) {
             description: 'Bad Request: failed to record in KV space'
         }), { headers: { 'Content-Type': 'application/json' }, status: 400 });
     }
+    Object.keys(keyList).forEach(key => {
+        keyList[key] *= JSON.parse(keyList[key]);
+    });
     return new Response(JSON.stringify({
         ok: true,
         result: keyList
