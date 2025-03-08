@@ -14,10 +14,7 @@ export async function onRequest(context) {
             description: 'Bad Request: failed to record in KV space'
         }), { headers: { 'Content-Type': 'application/json' }, status: 400 });
     }
-    keyList = keyList.map(value => value.metadata)
-    Object.keys(keyList).forEach(key => {
-        keyList[key] = JSON.parse(keyList[key]);
-    });
+    keyList = keyList.map(value => value.metadata);
     return new Response(JSON.stringify({
         ok: true,
         result: keyList
