@@ -1,0 +1,23 @@
+{
+  "name": "cattle-class-memory",
+  "version": "0.0.1",
+  "description": "Responding to high school life in cattle class by web-based photo archive",
+  "scripts": {
+    "dev": "wrangler pages dev ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syxxzzr/cattle-class-memory.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/syxxzzr/cattle-class-memory/issues"
+  },
+  "homepage": "https://github.com/syxxzzr/cattle-class-memory#readme",
+  "dependencies": {
+    "md5": "^2.3.0"
+  }
+}

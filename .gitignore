@@ -1,0 +1,5 @@
+/.idea
+/.wrangler
+/.achive
+/node_modules
+package-lock.json
