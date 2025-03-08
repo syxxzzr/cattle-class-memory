@@ -5,7 +5,7 @@ export async function onRequest(context) {
     try {
         while (keyData.list_complete) {
             keyData = await env.KVSpace.list({ cursor: keyData.cursor });
-            keyList.concat(keyData.keys);
+            keyList = keyList.concat(keyData.keys);
         }
     } catch (err) {
         return new Response(JSON.stringify({
