@@ -1,16 +1,16 @@
-### _Warning_
+## cattle-class-memory
 
-_You are now at `dev` branch_
+Responding to high school life in cattle class by web-based photo archive.
 
-_The code here is in developing_
+The wonderful web-based photo-wall and the auth system will be provided. By deploy this project in cloudflare pages, you can fastly access the website all over the world free of charge(but has some limitations) by using cloudflare's CDN.
 
-_You should return to `master` branch to get stable code_
+The project should be one of your or your organisation's good choice record some unforgettable moments.(in developing)
 
-### _注 意_
+Photos and other kinds of files(in developing) will be uploaded to telegram service and be storage by it by using telegram bot api. What the project do is help to connect you with telegram bot api by using simple api or a human-like web-based front-end panel(In developing). What's more, it the service can also running normally in areas where be prevented to access telegram service, what you need to do is to prepare a domin which can be normally accessed in this areas and deploy this project in cloudflare pages by the following course.
 
-_您正处于`dev`分支_
+### How To Deploy
 
-_此分支中存储的代码尚在开发中_
+First Step: Fork the project.
 
-_您应该返回`master`分支以获取更稳定版本的代码_
+Then...
 
