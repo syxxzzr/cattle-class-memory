@@ -29,10 +29,13 @@ export async function onRequest(context) {
         }), { headers: { 'Content-Type': 'application/json' }, status: 400 });
     }
     try {
-        await env.KVSpace.put(fileData['file_id'], JSON.stringify({
-            file_title: fileTitle,
-            file_description: description,
-        }));
+        await env.KVSpace.put(fileData['file_id'], '', {
+            metadata: {
+                file_id: fileData['file_id'],
+                file_title: fileTitle,
+                file_description: description,
+            }
+        });
     } catch (err) {
         return new Response(JSON.stringify({
             ok: false,
