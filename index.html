@@ -18,11 +18,20 @@
             background-color: #f5f5f7;
             color: #1d1d1f;
             line-height: 1.5;
+            min-width: 100vw;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .window-container {
             display: flex;
+            min-width: 100vw;
+            min-height: 100vh;
+        }
+
+        #auth {
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 0 10px;
         }
 
         .container {
@@ -30,17 +39,6 @@
             max-width: 430px;
             padding: 40px 20px;
             margin: 0 auto;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo svg {
-            width: 40px;
-            height: 40px;
-            fill: #000;
         }
 
         h1 {
@@ -72,20 +70,12 @@
             box-shadow: 0 0 0 4px rgba(0, 125, 250, 0.1);
         }
 
-        input.error {
-            border-color: #ff3b30;
-        }
-
         .error-message {
             display: none;
             color: #ff3b30;
             font-size: 14px;
             margin-top: 8px;
             padding-left: 2px;
-        }
-
-        .error-message.visible {
-            display: block;
         }
 
         button {
@@ -149,10 +139,6 @@
                 color: #f5f5f7;
             }
 
-            .logo svg {
-                fill: #f5f5f7;
-            }
-
             input {
                 background-color: #1d1d1f;
                 border-color: #424245;
@@ -162,10 +148,6 @@
             .divider::before,
             .divider::after {
                 border-color: #424245;
-            }
-
-            .alert {
-                background-color: rgba(255, 59, 48, 0.2);
             }
         }
 
@@ -190,22 +172,28 @@
                 padding-bottom: 20px;
             }
 
-            .logo {
-                margin-bottom: 20px;
-            }
-
             h1 {
                 margin-bottom: 20px;
             }
         }
+
+        @keyframes gentle-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-3px); }
+            40% { transform: translateX(3px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
     </style>
 </head>
 <body>
+<div class="window-container" id="archive">
+    <h1>验证您的通行密钥</h1>
+</div>
+<div class="window-container" id="auth">
     <div class="container">
-        <div class="logo"></div>
         <h1>验证您的通行密钥</h1>
-
-        <form id="loginForm">
+        <form id="authForm">
             <div class="form-group">
                 <input id="accessKey" placeholder="通行密钥">
                 <div class="error-message" id="errorMsg"></div>
@@ -221,81 +209,110 @@
             <p>忘记通行密钥? <a href="mailto:syxxzzr@gmail.com">联系我们</a></p>
         </div>
     </div>
+</div>
+<script>
+    let fileList = [];
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const accessKey = document.getElementById('accessKey');
-            const errorMsg = document.getElementById('errorMsg');
-            const submit = document.getElementById('submit');
-
-            accessKey.classList.remove('error');
-            errorMsg.classList.remove('visible');
-            submit.disabled = true;
-            submit.innerText = '验证中...';
-
-            if (/^\s*$/.test(accessKey.value))
-                showErrorHint('通行密钥不可为空');
-
-            try {
-                var response = await fetch('./api/user/detail', {
-                    method: 'POST',
-                    headers: {'Access-Key': CryptoJS.MD5(accessKey.value) }
-                });
-                if (!response.ok)
-                    throw Error;
-            } catch (err) {
-                showErrorHint('验证失败, 请重试');
-                submit.disabled = false;
-                submit.innerText = '验证';
-                return
-            }
-            let fileData = {
-                file_list: (await response.json()).result,
-                exp_time: new Date().getTime() + 43200000
-            };
-            let decryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString());
-            fileData = CryptoJS.AES.encrypt(JSON.stringify(fileData), decryptKey);
-            localStorage.setItem('file_data', fileData);
-        });
-
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes gentle-shake {
-                0%, 100% { transform: translateX(0); }
-                20% { transform: translateX(-3px); }
-                40% { transform: translateX(3px); }
-                60% { transform: translateX(-2px); }
-                80% { transform: translateX(2px); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        function adjustHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.trim().split('=');
+            if (cookieName.trim() === encodeURIComponent(name))
+                return cookieValue.trim() ? decodeURIComponent(cookieValue) : '';
         }
+        return undefined;
+    }
 
-        function showErrorHint(hint) {
-            const password = document.getElementById('accessKey');
-            const errorMsg = document.getElementById('errorMsg');
+    function loadFileListFromLocalStorage() {
+        let cryptKey = getCookie('CryptKey');
+        let fileData = localStorage.getItem('file_data');
+        if (cryptKey && fileData)
+            return [];
+        fileData = CryptoJS.AES.decrypt(fileData, cryptKey).toString(CryptoJS.enc.Utf8);
+        return fileData ? JSON.parse(fileData) : [];
+    }
 
-            password.classList.add('error');
-            errorMsg.innerText = hint;
-            errorMsg.classList.add('visible');
+    function adjustHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
 
-            const container = document.querySelector('.container');
-            container.style.animation = 'gentle-shake 0.3s';
-            setTimeout(() => {
-                container.style.animation = '';
-            }, 300);
-        }
+    function showErrorHint(hint) {
+        const accessKey = document.getElementById('accessKey');
+        const errorMsg = document.getElementById('errorMsg');
 
-        window.addEventListener('resize', adjustHeight);
-        window.addEventListener('orientationchange', adjustHeight);
+        errorMsg.innerText = hint;
+        errorMsg.style.display = 'block';
+        accessKey.style.borderColor = '#ff3b30';
+
+        const container = document.querySelector('.container');
+        container.style.animation = 'gentle-shake 0.3s';
+        setTimeout(() => {
+            container.style.animation = '';
+        }, 300);
+    }
+
+    async function loadFiles() {
+        // TODO
+    }
+
+    document.addEventListener('load', async (e) => {
         adjustHeight();
-    </script>
+
+        fileList = loadFileListFromLocalStorage();
+        if (!fileList)
+            location.hash = 'auth';
+        await loadFiles();
+    });
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const accessKey = document.getElementById('accessKey');
+        const errorMsg = document.getElementById('errorMsg');
+        const submit = document.getElementById('submit');
+
+        accessKey.style.borderColor = '';
+        errorMsg.style.display = '';
+        submit.innerText = '验证中...';
+        submit.disabled = true;
+
+        if (/^\s*$/.test(accessKey.value)) {
+            showErrorHint('通行密钥不可为空');
+            submit.disabled = false;
+            submit.innerText = '验证';
+            return ;
+        }
+
+        try {
+            var response = await fetch('./api/user/detail', {
+                method: 'POST',
+                headers: {'Access-Key': CryptoJS.MD5(accessKey.value) }
+            });
+            if (!response.ok)
+                throw Error;
+        } catch (err) {
+            showErrorHint('验证失败, 请重试');
+            submit.disabled = false;
+            submit.innerText = '验证';
+            return ;
+        }
+
+        fileList = JSON.stringify((await response.json()).result);
+        let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString());
+        let fileData = CryptoJS.AES.encrypt(fileList, cryptKey);
+        localStorage.setItem('file_data', fileData);
+        let cookie = `CryptKey=${cryptKey}`;
+        const date = new Date();
+        date.setTime(date.getTime() + 43200000);
+        cookie += `; expires=${date.toUTCString()}; max-age=43200; path=/`;
+        document.cookie = cookie;
+        location.hash = 'archive';
+    });
+
+    window.addEventListener('resize', adjustHeight);
+    window.addEventListener('orientationchange', adjustHeight);
+</script>
 </body>
 </html>
 
