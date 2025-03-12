@@ -34,6 +34,22 @@
             align-items: center;
         }
 
+        .banner-container {
+            min-width: 100vw;
+            min-height: 100vh;
+            position: absolute;
+        }
+
+        .banner-container a {
+            white-space: nowrap;
+            position: absolute;
+            left: 100%;
+            font-size: clamp(20px, 5vw, 24px);
+            font-weight: 500;
+            color: rgba(134, 134, 139, 50%);
+            animation: scroll-left 20s linear infinite;
+        }
+
         .container {
             width: 100%;
             max-width: 430px;
@@ -184,6 +200,11 @@
             60% { transform: translateX(-2px); }
             80% { transform: translateX(2px); }
         }
+
+        @keyframes scroll-left {
+            0% { left: 100%; }
+            100% { left: -100%; }
+        }
     </style>
 </head>
 <body>
@@ -191,6 +212,11 @@
     <h1>验证您的通行密钥</h1>
 </div>
 <div class="window-container" id="auth">
+    <div class="banner-container">
+        <a style="animation-delay: 0s; top: 10%">这边这时候</a>
+        <a style="animation-delay: 1s; top: 20%">Nèi~ 个</a>
+        <a style="animation-delay: 2s; top: 30%">我看以后这边这时候</a>
+    </div>
     <div class="container">
         <h1>验证您的通行密钥</h1>
         <form id="authForm">
@@ -211,8 +237,6 @@
     </div>
 </div>
 <script>
-    let fileList = [];
-
     function getCookie(name) {
         const cookies = document.cookie.split(';');
         for (const cookie of cookies) {
@@ -252,17 +276,17 @@
         }, 300);
     }
 
-    async function loadFiles() {
+    async function loadFiles(fileList) {
         // TODO
     }
 
     document.addEventListener('load', async (e) => {
         adjustHeight();
 
-        fileList = loadFileListFromLocalStorage();
+        let fileList = loadFileListFromLocalStorage();
         if (!fileList)
             location.hash = 'auth';
-        await loadFiles();
+        await loadFiles(fileList);
     });
 
     document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -298,7 +322,7 @@
             return ;
         }
 
-        fileList = JSON.stringify((await response.json()).result);
+        let fileList = JSON.stringify((await response.json()).result);
         let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString());
         let fileData = CryptoJS.AES.encrypt(fileList, cryptKey);
         localStorage.setItem('file_data', fileData);
@@ -308,6 +332,7 @@
         cookie += `; expires=${date.toUTCString()}; max-age=43200; path=/`;
         document.cookie = cookie;
         location.hash = 'archive';
+        await loadFiles(fileList);
     });
 
     window.addEventListener('resize', adjustHeight);
