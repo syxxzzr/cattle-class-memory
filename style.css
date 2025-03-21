@@ -15,11 +15,10 @@ body {
     overflow: hidden;
 }
 
-.window-container {
+.container {
     display: flex;
     min-width: 100vw;
     min-height: 100vh;
-    transition: opacity 0.5s ease;
 }
 
 #auth {

@@ -1,11 +1,9 @@
-// Banner phrases that will scroll across the screen
 const BannerList = [
     '这边这时候',
     'Nèi~ 个',
     '我看以后这边这时候'
 ];
 
-// Get cookie by name
 function getCookie(name) {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
@@ -16,7 +14,6 @@ function getCookie(name) {
     return undefined;
 }
 
-// Load file list from localStorage with decryption
 function loadFileListFromLocalStorage() {
     let cryptKey = getCookie('CryptKey');
     let fileData = localStorage.getItem('file_data');
@@ -33,13 +30,11 @@ function loadFileListFromLocalStorage() {
     }
 }
 
-// Adjust viewport height for mobile browsers
 function adjustHeight() {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
-// Show error message with animation
 function showErrorHint(hint) {
     const accessKey = document.getElementById('accessKey');
     const errorMsg = document.getElementById('errorMsg');
@@ -55,7 +50,6 @@ function showErrorHint(hint) {
     }, 300);
 }
 
-// Load photos into the photo wall with click to enlarge functionality
 async function loadFiles(fileList) {
     if (!fileList || fileList.length === 0)
         return;
@@ -89,7 +83,7 @@ async function loadFiles(fileList) {
                 </div>
             `;
 
-            const imgElement = archiveCard.querySelector('.photo-img');
+            const imgElement = archiveCard.querySelector('.archive-img');
             imgElement.addEventListener('click', () => {
                 openLightbox(imgSrc, file.file_title || 'Archive');
             });
@@ -112,14 +106,12 @@ function openLightbox(imgSrc, imgAlt) {
     document.body.style.overflow = 'hidden';
 }
 
-// 灯箱功能 - 关闭灯箱
 function closeLightbox() {
     const lightbox = document.getElementById('lightbox');
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
 }
 
-// 初始化灯箱事件
 function initializeLightbox() {
     const lightboxClose = document.getElementById('lightboxClose');
     const lightbox = document.getElementById('lightbox');
@@ -143,7 +135,7 @@ function initializeBanners() {
             const banner = document.createElement('a');
             banner.textContent = text;
             banner.style.animationDelay = `${Math.random() * 5}s`;
-            banner.style.top = `${Math.floor(Math.random() * 50) + 20}%`;
+            banner.style.top = `${Math.floor(Math.random() * 60) + 15}%`;
             const duration = 15 + Math.random() * 10;
             banner.style.animationDuration = `${duration}s`;
             bannerContainer.appendChild(banner);
