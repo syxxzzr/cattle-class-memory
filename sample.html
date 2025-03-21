@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <title>六班记忆</title>
-    <style>
+    <link rel="stylesheet" href="style.css">
+    <!-- 原样式已移至style.css
         * {
             margin: 0;
             padding: 0;
@@ -205,11 +206,21 @@
             0% { left: 100%; }
             100% { left: -100%; }
         }
-    </style>
+    -->
 </head>
 <body>
 <div class="window-container" id="archive">
-    <h1>验证您的通行密钥</h1>
+    <div class="photo-wall-header">
+        <h1 class="photo-wall-title">六班记忆</h1>
+    </div>
+    <div class="photo-wall-intro">
+        <p>欢迎来到六班记忆照片墙，这里收集了我们班级的珍贵回忆和美好时光。每一张照片都承载着我们共同的故事和难忘的瞬间。</p>
+    </div>
+    <div id="photoWall"></div>
+</div>
+<div class="lightbox" id="lightbox">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="放大图片">
+    <div class="lightbox-close" id="lightboxClose">×</div>
 </div>
 <div class="window-container" id="auth">
     <div class="banner-container">
@@ -236,111 +247,102 @@
         </div>
     </div>
 </div>
+<script src="script.js"></script>
 <script>
-    const BannerList = [
-        ''
-    ];
-
-    function getCookie(name) {
-        const cookies = document.cookie.split(';');
-        for (const cookie of cookies) {
-            const [cookieName, cookieValue] = cookie.trim().split('=');
-            if (cookieName.trim() === encodeURIComponent(name))
-                return cookieValue.trim() ? decodeURIComponent(cookieValue) : '';
-        }
-        return undefined;
-    }
-
-    function loadFileListFromLocalStorage() {
-        let cryptKey = getCookie('CryptKey');
-        let fileData = localStorage.getItem('file_data');
-        if (cryptKey && fileData)
-            return [];
-        fileData = CryptoJS.AES.decrypt(fileData, cryptKey).toString(CryptoJS.enc.Utf8);
-        return fileData ? JSON.parse(fileData) : [];
-    }
-
-    function adjustHeight() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-    }
-
-    function showErrorHint(hint) {
-        const accessKey = document.getElementById('accessKey');
-        const errorMsg = document.getElementById('errorMsg');
-
-        errorMsg.innerText = hint;
-        errorMsg.style.display = 'block';
-        accessKey.style.borderColor = '#ff3b30';
-
-        const container = document.querySelector('.container');
-        container.style.animation = 'gentle-shake 0.3s';
-        setTimeout(() => {
-            container.style.animation = '';
-        }, 300);
-    }
-
-    async function loadFiles(fileList) {
-        // TODO
-    }
-
-    document.addEventListener('load', async (e) => {
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', async () => {
         adjustHeight();
+        initializeBanners();
+        initializeLightbox();
+        
+        // 检查URL锚点并处理页面显示
+        const handleHashChange = async () => {
+            const hash = location.hash.replace('#', '') || 'auth';
+            const authContainer = document.getElementById('auth');
+            const archiveContainer = document.getElementById('archive');
+            
+            if (hash === 'auth') {
+                authContainer.classList.remove('hidden');
+                archiveContainer.classList.remove('active');
+            } else if (hash === 'archive') {
+                // 尝试从localStorage加载数据
+                const fileList = loadFileListFromLocalStorage();
+                if (fileList) {
+                    authContainer.classList.add('hidden');
+                    archiveContainer.classList.add('active');
+                    await loadFiles(fileList);
+                } else {
+                    location.hash = 'auth';
+                }
+            }
+        };
+        
+        // 初始处理URL锚点
+        await handleHashChange();
+        window.addEventListener('hashchange', handleHashChange);
+        
+        // 登出功能已移除
+        
+        // 表单提交事件
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        let fileList = loadFileListFromLocalStorage();
-        if (!fileList)
-            location.hash = 'auth';
-        await loadFiles(fileList);
-    });
+            const accessKey = document.getElementById('accessKey');
+            const errorMsg = document.getElementById('errorMsg');
+            const submit = document.getElementById('submit');
 
-    document.getElementById('authForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+            accessKey.style.borderColor = '';
+            errorMsg.style.display = '';
+            submit.innerText = '验证中...';
+            submit.disabled = true;
 
-        const accessKey = document.getElementById('accessKey');
-        const errorMsg = document.getElementById('errorMsg');
-        const submit = document.getElementById('submit');
+            if (/^\s*$/.test(accessKey.value)) {
+                showErrorHint('通行密钥不可为空');
+                submit.disabled = false;
+                submit.innerText = '验证';
+                return;
+            }
 
-        accessKey.style.borderColor = '';
-        errorMsg.style.display = '';
-        submit.innerText = '验证中...';
-        submit.disabled = true;
+            try {
+                var response = await fetch('./api/user/detail', {
+                    method: 'POST',
+                    headers: {'Access-Key': CryptoJS.MD5(accessKey.value)}
+                });
+                if (!response.ok)
+                    throw Error;
+            } catch (err) {
+                showErrorHint('验证失败, 请重试');
+                submit.disabled = false;
+                submit.innerText = '验证';
+                return;
+            }
 
-        if (/^\s*$/.test(accessKey.value)) {
-            showErrorHint('通行密钥不可为空');
-            submit.disabled = false;
-            submit.innerText = '验证';
-            return ;
-        }
-
-        try {
-            var response = await fetch('./api/user/detail', {
-                method: 'POST',
-                headers: {'Access-Key': CryptoJS.MD5(accessKey.value) }
-            });
-            if (!response.ok)
-                throw Error;
-        } catch (err) {
-            showErrorHint('验证失败, 请重试');
-            submit.disabled = false;
-            submit.innerText = '验证';
-            return ;
-        }
-
-        let fileList = JSON.stringify((await response.json()).result);
-        let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString());
-        let fileData = CryptoJS.AES.encrypt(fileList, cryptKey);
-        localStorage.setItem('file_data', fileData);
-        let cookie = `CryptKey=${cryptKey}`;
-        const date = new Date();
-        date.setTime(date.getTime() + 43200000);
-        cookie += `; expires=${date.toUTCString()}; max-age=43200; path=/`;
-        document.cookie = cookie;
-        location.hash = 'archive';
-        await loadFiles(fileList);
+            try {
+                const responseData = await response.json();
+                let fileList = JSON.stringify(responseData.result);
+                let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString()).toString();
+                let fileData = CryptoJS.AES.encrypt(fileList, cryptKey).toString();
+                localStorage.setItem('file_data', fileData);
+                
+                // 设置Cookie，过期时间12小时
+                const date = new Date();
+                date.setTime(date.getTime() + 43200000); // 12小时 = 43200000毫秒
+                document.cookie = `CryptKey=${encodeURIComponent(cryptKey)}; expires=${date.toUTCString()}; max-age=43200; path=/`;
+                
+                location.hash = 'archive';
+                await loadFiles(JSON.parse(fileList));
+            } catch (err) {
+                console.error('处理响应数据时出错:', err);
+                showErrorHint('数据处理失败，请重试');
+                submit.disabled = false;
+                submit.innerText = '验证';
+            }
+        });
     });
 
     window.addEventListener('resize', adjustHeight);
     window.addEventListener('orientationchange', adjustHeight);
+</script>
 </script>
 </body>
 </html>
