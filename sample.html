@@ -57,21 +57,21 @@
             const hash = location.hash.replace('#', '') || 'archive';
             const fileList = loadFileListFromLocalStorage();
 
-            if (hash === 'auth')
+            if (hash === 'auth') {
                 if (fileList)
                     location.hash = 'archive';
-            else if (hash === 'archive')
+            }
+            else if (hash === 'archive') {
                 if (fileList)
                     await loadFiles(fileList);
                 else
                     location.hash = 'auth';
+            }
         };
 
-        // 初始处理URL锚点
         await handleHashChange();
         window.addEventListener('hashchange', handleHashChange);
 
-        // 表单提交事件
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
