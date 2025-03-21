@@ -100,7 +100,7 @@ async function loadFiles(fileList) {
             // 添加点击事件，点击图片时打开灯箱
             const imgElement = photoCard.querySelector('.photo-img');
             imgElement.addEventListener('click', () => {
-                openLightbox(imgSrc, file.file_title || 'Photo');
+                openLightbox(imgSrc, file.file_title || 'Photo', file.file_title, file.file_description);
             });
             
             photoWall.appendChild(photoCard);
@@ -113,12 +113,18 @@ async function loadFiles(fileList) {
 }
 
 // 灯箱功能 - 打开灯箱
-function openLightbox(imgSrc, imgAlt) {
+function openLightbox(imgSrc, imgAlt, imgTitle, imgDescription) {
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    const lightboxDescription = document.getElementById('lightboxDescription');
     
     lightboxImg.src = imgSrc;
     lightboxImg.alt = imgAlt;
+    
+    // 设置照片标题和描述
+    lightboxTitle.textContent = imgTitle || 'Untitled';
+    lightboxDescription.textContent = imgDescription || '';
     
     lightbox.classList.add('active');
     

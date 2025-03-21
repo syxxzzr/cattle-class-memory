@@ -220,6 +220,10 @@
 </div>
 <div class="lightbox" id="lightbox">
     <img class="lightbox-img" id="lightboxImg" src="" alt="放大图片">
+    <div class="lightbox-info" id="lightboxInfo">
+        <h3 class="lightbox-title" id="lightboxTitle"></h3>
+        <p class="lightbox-description" id="lightboxDescription"></p>
+    </div>
     <div class="lightbox-close" id="lightboxClose">×</div>
 </div>
 <div class="window-container" id="auth">
@@ -254,13 +258,13 @@
         adjustHeight();
         initializeBanners();
         initializeLightbox();
-        
+
         // 检查URL锚点并处理页面显示
         const handleHashChange = async () => {
             const hash = location.hash.replace('#', '') || 'auth';
             const authContainer = document.getElementById('auth');
             const archiveContainer = document.getElementById('archive');
-            
+
             if (hash === 'auth') {
                 authContainer.classList.remove('hidden');
                 archiveContainer.classList.remove('active');
@@ -276,13 +280,13 @@
                 }
             }
         };
-        
+
         // 初始处理URL锚点
         await handleHashChange();
         window.addEventListener('hashchange', handleHashChange);
-        
+
         // 登出功能已移除
-        
+
         // 表单提交事件
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -323,12 +327,12 @@
                 let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString()).toString();
                 let fileData = CryptoJS.AES.encrypt(fileList, cryptKey).toString();
                 localStorage.setItem('file_data', fileData);
-                
+
                 // 设置Cookie，过期时间12小时
                 const date = new Date();
                 date.setTime(date.getTime() + 43200000); // 12小时 = 43200000毫秒
                 document.cookie = `CryptKey=${encodeURIComponent(cryptKey)}; expires=${date.toUTCString()}; max-age=43200; path=/`;
-                
+
                 location.hash = 'archive';
                 await loadFiles(JSON.parse(fileList));
             } catch (err) {
@@ -342,7 +346,6 @@
 
     window.addEventListener('resize', adjustHeight);
     window.addEventListener('orientationchange', adjustHeight);
-</script>
 </script>
 </body>
 </html>
