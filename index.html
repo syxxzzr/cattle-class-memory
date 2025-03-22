@@ -20,7 +20,6 @@
             line-height: 1.5;
             min-width: 100vw;
             min-height: 100vh;
-            overflow: hidden;
         }
 
         h1 {
@@ -47,6 +46,7 @@
         }
 
         .banner-container {
+            overflow: hidden;
             min-width: 100vw;
             min-height: 100vh;
             position: absolute;
@@ -63,6 +63,23 @@
             color: rgba(134, 134, 139, 50%);
             animation: scroll-left 20s linear infinite;
             /* 动画持续时间将在JS中动态设置 */
+        }
+
+        .footer-container {
+            position: fixed;
+            bottom: 0;
+            width: 100vw;
+            padding: 10px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+
+        .footer-container p {
+            margin-bottom: 3px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #86868b;
         }
 
         .auth-container {
@@ -374,6 +391,7 @@
                 color: #f5f5f7;
             }
 
+            .footer-container,
             .auth-container {
                 background-color: rgba(44, 44, 46, 0.8);
             }
@@ -401,6 +419,8 @@
         /* Responsive Design */
         @media screen and (max-width: 480px) {
             .auth-container {
+                width: 90%;
+                min-width: 250px;
                 padding: 30px 15px;
             }
 
@@ -467,6 +487,18 @@
         <div class="help-text">
             <p>忘记通行密钥? <a href="mailto:syxxzzr@gmail.com">联系我们</a></p>
         </div>
+    </div>
+</div>
+<div class="footer-container">
+    <p>六班记忆</p>
+    <div>
+        <a href="https://github.com/syxxzzr" target="_blank">
+            <img alt="" src="https://img.shields.io/badge/Author-syxxzzr-red">
+        </a>
+        <a href="https://github.com/syxxzzr" target="_blank">
+            <img alt="" src="https://img.shields.io/badge/Github-cattle--class--memory-blue">
+            <img alt="" src="https://img.shields.io/badge/License-MIT-green">
+        </a>
     </div>
 </div>
 <script>
@@ -590,10 +622,10 @@
         errorMsg.style.display = 'block';
         accessKey.style.borderColor = '#ff3b30';
 
-        const container = document.querySelector('.container');
-        container.style.animation = 'gentle-shake 0.3s';
+        const authContainer = document.querySelector('.auth-container');
+        authContainer.style.animation = 'gentle-shake 0.3s';
         setTimeout(() => {
-            container.style.animation = '';
+            authContainer.style.animation = '';
         }, 300);
     }
 
@@ -683,8 +715,8 @@
                 const banner = document.createElement('a');
                 banner.textContent = text;
                 banner.style.animationDelay = `${Math.random() * 5}s`;
-                banner.style.top = `${Math.floor(Math.random() * 60) + 15}%`;
-                const duration = 15 + Math.random() * 10;
+                banner.style.top = `${Math.floor(Math.random() * 50) + 10}%`;
+                const duration = 5 + Math.max(window.innerWidth, 320) / 80;
                 banner.style.animationDuration = `${duration}s`;
                 bannerContainer.appendChild(banner);
             }
