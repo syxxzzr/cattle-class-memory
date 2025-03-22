@@ -62,11 +62,24 @@
             font-weight: 500;
             color: rgba(134, 134, 139, 50%);
             animation: scroll-left 20s linear infinite;
+            /* 动画持续时间将在JS中动态设置 */
         }
 
-        footer {
+        .footer-container {
             position: fixed;
-            bottom: 3px;
+            bottom: 0;
+            width: 100vw;
+            padding: 10px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+
+        .footer-container p {
+            margin-bottom: 3px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #86868b;
         }
 
         .auth-container {
@@ -363,6 +376,7 @@
                 color: #f5f5f7;
             }
 
+            .footer-container,
             .auth-container {
                 background-color: rgba(44, 44, 46, 0.8);
             }
@@ -459,7 +473,10 @@
             <p>忘记通行密钥? <a href="mailto:syxxzzr@gmail.com">联系我们</a></p>
         </div>
     </div>
-    <footer>
+</div>
+<div class="footer-container">
+    <p>六班记忆</p>
+    <div>
         <a href="https://github.com/syxxzzr" target="_blank">
             <img alt="" src="https://img.shields.io/badge/Author-syxxzzr-red">
         </a>
@@ -467,19 +484,17 @@
             <img alt="" src="https://img.shields.io/badge/Github-cattle--class--memory-blue">
             <img alt="" src="https://img.shields.io/badge/License-MIT-green">
         </a>
-    </footer>
+    </div>
 </div>
 <script>
     const BannerList = [
         '这边这时候',
-        '你们的Nèi~ 个',
-        '从你们数学的角度看',
-        '第一的 第一的是什么',
-        '我省的考题',
+        'Nèi~ 个',
+        '我看以后这边这时候'
     ];
 
     document.addEventListener('DOMContentLoaded', async () => {
-        adjustHeight();  // suit different environment
+        adjustHeight();
         initializeBanners();
         initializeLightbox();
         const fileList = loadFileListFromLocalStorage();
@@ -507,7 +522,6 @@
             submit.innerText = '验证中...';
             submit.disabled = true;
 
-            // empty access key
             if (/^\s*$/.test(accessKey.value)) {
                 showErrorHint('通行密钥不可为空');
                 submit.disabled = false;
@@ -530,21 +544,17 @@
             }
 
             try {
-                // save file list
                 const responseData = await response.json();
                 let fileList = JSON.stringify(responseData.result);
                 let cryptKey = CryptoJS.MD5(accessKey.value + new Date().getTime().toString()).toString();
                 let fileData = CryptoJS.AES.encrypt(fileList, cryptKey).toString();
                 localStorage.setItem('file_data', fileData);
 
-                // save encrypt key
                 const date = new Date();
                 date.setTime(date.getTime() + 43200000);
                 document.cookie = `CryptKey=${encodeURIComponent(cryptKey)}; expires=${date.toUTCString()}; max-age=43200; path=/`;
                 authContainer.style.display = 'none';
                 archiveContainer.style.display = '';
-
-                // load archive library
                 await loadFiles(JSON.parse(fileList));
             } catch (err) {
                 console.error('处理响应数据时出错:', err);
@@ -576,7 +586,6 @@
             return null;
 
         try {
-            // load encrypted file list
             fileData = CryptoJS.AES.decrypt(fileData, cryptKey).toString(CryptoJS.enc.Utf8);
             return fileData ? JSON.parse(fileData) : null;
         } catch (error) {
@@ -598,7 +607,6 @@
         errorMsg.style.display = 'block';
         accessKey.style.borderColor = '#ff3b30';
 
-        // shake container
         const authContainer = document.querySelector('.auth-container');
         authContainer.style.animation = 'gentle-shake 0.3s';
         setTimeout(() => {
@@ -613,7 +621,6 @@
         const archiveLibrary = document.getElementById('archive-library');
         archiveLibrary.innerHTML = '';
 
-        // display when loading
         const loadingElement = document.createElement('div');
         loadingElement.className = 'loading';
         loadingElement.innerHTML = '<div class="loading-spinner"></div>';
@@ -626,7 +633,6 @@
                 archiveCard.style.animation = 'fade-in 0.5s ease forwards, slide-up 0.5s ease forwards';
                 archiveCard.style.animationDelay = `${Math.random() * 0.5}s`;
 
-                // full image url
                 let imgSrc = '';
                 if (file.file_url)
                     imgSrc = file.file_url;
@@ -642,7 +648,6 @@
             `;
 
                 const imgElement = archiveCard.querySelector('.archive-img');
-                // click to open lightbox
                 imgElement.addEventListener('click', () => {
                     openLightbox(imgSrc, file.file_title || 'Archive');
                 });
@@ -692,7 +697,6 @@
 
         BannerList.forEach((text) => {
             if (text) {
-                // random animation style
                 const banner = document.createElement('a');
                 banner.textContent = text;
                 banner.style.animationDelay = `${Math.random() * 5}s`;
