@@ -30,17 +30,18 @@
 
         .container {
             display: flex;
-            align-items: center;
             min-width: 100vw;
             min-height: 100vh;
         }
 
-        .container.auth {
+        #auth {
             justify-content: center;
+            align-items: center;
         }
 
-        .container.archive {
+        #archive {
             flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
 
@@ -65,17 +66,17 @@
 
         footer {
             position: fixed;
-            bottom: 0;
+            bottom: 3px;
         }
 
         footer img {
-            margin: 2px;
+            margin: auto 2px;
         }
 
-        .auth-form {
+        .auth-container {
             width: 100%;
             max-width: 430px;
-            padding: 35px 20px;
+            padding: 40px 20px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -85,7 +86,7 @@
             z-index: 1;
         }
 
-        .auth-form h1 {
+        .auth-container h1 {
             margin-bottom: 30px;
         }
 
@@ -209,7 +210,7 @@
             font-weight: 600;
         }
 
-        .archive-library {
+        #archive-library {
             width: 100%;
             max-width: 1200px;
             display: grid;
@@ -261,7 +262,7 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            padding: 35px 0;
+            padding: 40px 0;
             grid-column: 1 / -1;
         }
 
@@ -366,7 +367,7 @@
                 color: #f5f5f7;
             }
 
-            .auth-form {
+            .auth-container {
                 background-color: rgba(44, 44, 46, 0.8);
             }
 
@@ -392,58 +393,59 @@
 
         /* Responsive Design */
         @media screen and (max-width: 480px) {
-            input, button {
-                padding: 10px 12px;
-                font-size: 16px;
-            }
-
-            .auth-form {
+            .auth-container {
                 width: 90%;
                 min-width: 250px;
                 padding: 30px 15px;
+            }
+
+            input, button {
+                padding: 10px 12px;
+                font-size: 16px;
             }
 
             .form-group {
                 margin-bottom: 15px;
             }
 
-            .archive-library {
+            #archive-library {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 15px;
             }
         }
 
         @media screen and (max-height: 600px) {
-            .auth-form {
+            .auth-container {
                 padding-top: 20px;
                 padding-bottom: 20px;
             }
 
-            .auth-form h1 {
+            .auth-container h1 {
                 margin-bottom: 20px;
             }
         }
+
     </style>
 </head>
 <body>
 
-<div class="container archive">
+<div class="container" id="archive">
     <div class="archive-library-header">
         <h1 class="archive-library-title" style="margin-bottom: 0">六班记忆</h1>
     </div>
     <div class="archive-library-intro">
         <p>欢迎来到六班记忆照片墙，这里收集了我们班级的珍贵回忆和美好时光。每一张照片都承载着我们共同的故事和难忘的瞬间。</p>
     </div>
-    <div class="archive-library" id="archive-library"></div>
+    <div id="archive-library"></div>
 </div>
 <div class="lightbox" id="lightbox">
     <img class="lightbox-img" id="lightboxImg" src="" alt="放大图片">
     <div class="lightbox-close" id="lightboxClose">×</div>
 </div>
 
-<div class="container auth">
+<div class="container" id="auth">
     <div class="banner-container"></div>
-    <div class="auth-form">
+    <div class="auth-container">
         <h1>验证您的通行密钥</h1>
         <form id="authForm">
             <div class="form-group">
@@ -601,7 +603,7 @@
         accessKey.style.borderColor = '#ff3b30';
 
         // shake container
-        const authContainer = document.querySelector('.auth-form');
+        const authContainer = document.querySelector('.auth-container');
         authContainer.style.animation = 'gentle-shake 0.3s';
         setTimeout(() => {
             authContainer.style.animation = '';
