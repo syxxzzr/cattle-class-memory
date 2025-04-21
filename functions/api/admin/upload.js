@@ -23,6 +23,7 @@ export async function onRequest(context) {
 
 async function uploadFile(file, fileTitle, description, tgBotToken, tgChannelID, KVSpace) {
     let fileData;
+    let identifier = crypto.randomUUID();
     try {
         const form = new FormData();
         form.append('chat_id', tgChannelID);
@@ -45,7 +46,7 @@ async function uploadFile(file, fileTitle, description, tgBotToken, tgChannelID,
         }), { headers: { 'Content-Type': 'application/json' }, status: 400 });
     }
     try {
-        await KVSpace.put(crypto.randomUUID(), '', {
+        await KVSpace.put(identifier, '', {
             metadata: {
                 file_id: fileData['file_id'],
                 file_title: fileTitle,
@@ -62,10 +63,12 @@ async function uploadFile(file, fileTitle, description, tgBotToken, tgChannelID,
     return new Response(JSON.stringify({
         ok: true,
         result: {
+            identifier: identifier,
             file_id: fileData['file_id'],
             file_size: fileData['file_size'],
             width: fileData['width'],
-            height: fileData['height']}
+            height: fileData['height']
+        }
     }), { headers: { 'Content-Type': 'application/json' } });
 }
 
@@ -76,8 +79,9 @@ async function uploadExternalFile(fileUrl, fileTitle, description, KVSpace) {
             error_code: 400,
             description: 'Bad Request: valid file url'
         }), { headers: { 'Content-Type': 'application/json' }, status: 400 });
+    let identifier = crypto.randomUUID();
     try {
-        await KVSpace.put(crypto.randomUUID(), '', {
+        await KVSpace.put(identifier, '', {
             metadata: {
                 file_url: fileUrl,
                 file_title: fileTitle,
@@ -93,6 +97,6 @@ async function uploadExternalFile(fileUrl, fileTitle, description, KVSpace) {
     }
     return new Response(JSON.stringify({
         ok: true,
-        result: { file_url: fileUrl }
+        result: { identifier: identifier, file_url: fileUrl }
     }), { headers: { 'Content-Type': 'application/json' } });
 }
