@@ -541,7 +541,7 @@ export async function onRequest(context) {
                 // save encrypt key
                 const date = new Date();
                 date.setTime(date.getTime() + 43200000);
-                document.cookie = \`CryptKey=${encodeURIComponent(cryptKey)}; expires=${date.toUTCString()}; max-age=43200; path=/\`;
+                document.cookie = \`CryptKey=\${encodeURIComponent(cryptKey)}; expires=\${date.toUTCString()}; max-age=43200; path=/\`;
                 authContainer.style.display = 'none';
                 archiveContainer.style.display = '';
 
@@ -588,7 +588,7 @@ export async function onRequest(context) {
 
     function adjustHeight() {
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', \`${vh}px\`);
+        document.documentElement.style.setProperty('--vh', \`\${vh}px\`);
     }
 
     function showErrorHint(hint) {
@@ -625,20 +625,20 @@ export async function onRequest(context) {
                 const archiveCard = document.createElement('div');
                 archiveCard.className = 'archive-card';
                 archiveCard.style.animation = 'fade-in 0.5s ease forwards, slide-up 0.5s ease forwards';
-                archiveCard.style.animationDelay = \`${Math.random() * 0.5}s\`;
+                archiveCard.style.animationDelay = \`\${Math.random() * 0.5}s\`;
 
                 // full image url
                 let imgSrc = '';
                 if (file.file_url)
                     imgSrc = file.file_url;
                 else if (file.file_id)
-                    imgSrc = \`./file/${file.file_id}\`;
+                    imgSrc = \`./file/\${file.file_id}\`;
 
                 archiveCard.innerHTML = \`
-                <img class="archive-img" src="${imgSrc}" alt="${file.file_title || 'Photo'}" loading="lazy">
+                <img class="archive-img" src="\${imgSrc}" alt="\${file.file_title || 'Photo'}" loading="lazy">
                 <div class="archive-info">
-                    <h3 class="archive-title">${file.file_title || 'Untitled'}</h3>
-                    <p class="archive-description">${file.file_description || ''}</p>
+                    <h3 class="archive-title">\${file.file_title || 'Untitled'}</h3>
+                    <p class="archive-description">\${file.file_description || ''}</p>
                 </div>
             \`;
 
@@ -696,10 +696,10 @@ export async function onRequest(context) {
                 // random animation style
                 const banner = document.createElement('a');
                 banner.textContent = text;
-                banner.style.animationDelay = \`${Math.random() * 5}s\`;
-                banner.style.top = \`${Math.floor(Math.random() * 50) + 10}%\`;
+                banner.style.animationDelay = \`\${Math.random() * 5}s\`;
+                banner.style.top = \`\${Math.floor(Math.random() * 50) + 10}%\`;
                 const duration = 5 + Math.max(window.innerWidth, 320) / 80;
-                banner.style.animationDuration = \`${duration}s\`;
+                banner.style.animationDuration = \`\${duration}s\`;
                 bannerContainer.appendChild(banner);
             }
         });
@@ -708,7 +708,7 @@ export async function onRequest(context) {
 </body>
 </html>
 `
-    return new Response(page)
+    return new Response(page, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 }
 
 
