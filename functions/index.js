@@ -1,10 +1,13 @@
+export async function onRequest(context) {
+    const { env } = context;
+    const page = `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <title>六班记忆</title>
+    <title>${env.projectName}</title>
     <style>
         * {
             margin: 0;
@@ -431,10 +434,10 @@
 
 <div class="container" id="archive">
     <div class="archive-library-header">
-        <h1 class="archive-library-title" style="margin-bottom: 0">六班记忆</h1>
+        <h1 class="archive-library-title" style="margin-bottom: 0">${env.projectName}</h1>
     </div>
     <div class="archive-library-intro">
-        <p>欢迎来到六班记忆照片墙，这里收集了我们班级的珍贵回忆和美好时光。每一张照片都承载着我们共同的故事和难忘的瞬间。</p>
+        <p>${env.projectDescription}</p>
     </div>
     <div id="archive-library"></div>
 </div>
@@ -474,13 +477,7 @@
     </footer>
 </div>
 <script>
-    const BannerList = [
-        '这边这时候',
-        '你们的Nèi~ 个',
-        '从你们数学的角度看',
-        '第一的 第一的是什么',
-        '我省的考题',
-    ];
+    const BannerList = ${JSON.stringify(env.trashTalk.split(';') || [])};
 
     document.addEventListener('DOMContentLoaded', async () => {
         adjustHeight();  // suit different environment
@@ -512,7 +509,7 @@
             submit.disabled = true;
 
             // empty access key
-            if (/^\s*$/.test(accessKey.value)) {
+            if (/^\\s*$/.test(accessKey.value)) {
                 showErrorHint('通行密钥不可为空');
                 submit.disabled = false;
                 submit.innerText = '验证';
@@ -544,7 +541,7 @@
                 // save encrypt key
                 const date = new Date();
                 date.setTime(date.getTime() + 43200000);
-                document.cookie = `CryptKey=${encodeURIComponent(cryptKey)}; expires=${date.toUTCString()}; max-age=43200; path=/`;
+                document.cookie = \`CryptKey=\${encodeURIComponent(cryptKey)}; expires=\${date.toUTCString()}; max-age=43200; path=/\`;
                 authContainer.style.display = 'none';
                 archiveContainer.style.display = '';
 
@@ -591,7 +588,7 @@
 
     function adjustHeight() {
         const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.documentElement.style.setProperty('--vh', \`\${vh}px\`);
     }
 
     function showErrorHint(hint) {
@@ -628,22 +625,22 @@
                 const archiveCard = document.createElement('div');
                 archiveCard.className = 'archive-card';
                 archiveCard.style.animation = 'fade-in 0.5s ease forwards, slide-up 0.5s ease forwards';
-                archiveCard.style.animationDelay = `${Math.random() * 0.5}s`;
+                archiveCard.style.animationDelay = \`\${Math.random() * 0.5}s\`;
 
                 // full image url
                 let imgSrc = '';
                 if (file.file_url)
                     imgSrc = file.file_url;
                 else if (file.file_id)
-                    imgSrc = `./file/${file.file_id}`;
+                    imgSrc = \`./file/\${file.file_id}\`;
 
-                archiveCard.innerHTML = `
-                <img class="archive-img" src="${imgSrc}" alt="${file.file_title || 'Photo'}" loading="lazy">
+                archiveCard.innerHTML = \`
+                <img class="archive-img" src="\${imgSrc}" alt="\${file.file_title || 'Photo'}" loading="lazy">
                 <div class="archive-info">
-                    <h3 class="archive-title">${file.file_title || 'Untitled'}</h3>
-                    <p class="archive-description">${file.file_description || ''}</p>
+                    <h3 class="archive-title">\${file.file_title || 'Untitled'}</h3>
+                    <p class="archive-description">\${file.file_description || ''}</p>
                 </div>
-            `;
+            \`;
 
                 const imgElement = archiveCard.querySelector('.archive-img');
                 // click to open lightbox
@@ -699,10 +696,10 @@
                 // random animation style
                 const banner = document.createElement('a');
                 banner.textContent = text;
-                banner.style.animationDelay = `${Math.random() * 5}s`;
-                banner.style.top = `${Math.floor(Math.random() * 50) + 10}%`;
+                banner.style.animationDelay = \`\${Math.random() * 5}s\`;
+                banner.style.top = \`\${Math.floor(Math.random() * 50) + 10}%\`;
                 const duration = 5 + Math.max(window.innerWidth, 320) / 80;
-                banner.style.animationDuration = `${duration}s`;
+                banner.style.animationDuration = \`\${duration}s\`;
                 bannerContainer.appendChild(banner);
             }
         });
@@ -710,3 +707,8 @@
 </script>
 </body>
 </html>
+`
+    return new Response(page, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
+}
+
+

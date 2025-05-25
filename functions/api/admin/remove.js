@@ -1,9 +1,9 @@
 export async function onRequest(context) {
     const { request, env } = context;
     const formData = await request.formData();
-    const fileId = formData.get('file_id');
+    const identifier = formData.get('identifier');
     try {
-        await env.KVSpace.delete(fileId);
+        await env.KVSpace.delete(identifier);
     } catch (err) {
         return new Response(JSON.stringify({
             ok: false,
