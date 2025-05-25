@@ -1,16 +1,66 @@
 ## cattle-class-memory
 
-Responding to high school life in cattle class by web-based photo archive.
+一个非常垃圾的小DEMO 用于使用Cloudflare Pages部署一个简易的班级相册 包含简易的身份验证(简易到甚至称不上是身份验证)
 
-The wonderful web-based photo-wall and the auth system will be provided. By deploy this project in cloudflare pages, you can fastly access the website all over the world free of charge(but has some limitations) by using cloudflare's CDN.
+采用MIT协议开源 但是完全不建议你把时间花费在这一坨屎山💩上
 
-The project should be one of your or your organisation's good choice record some unforgettable moments.(in developing)
+#### 必须的环境变量:
 
-Photos and other kinds of files(in developing) will be uploaded to telegram service and be storage by it by using telegram bot api. What the project do is help to connect you with telegram bot api by using simple api or a human-like web-based front-end panel(In developing). What's more, it the service can also running normally in areas where be prevented to access telegram service, what you need to do is to prepare a domin which can be normally accessed in this areas and deploy this project in cloudflare pages by the following course.
+| 名称                 | 描述                              |
+|--------------------|---------------------------------|
+| accessKey          | 必须 用于验证身份的通行密钥                  |
+| adminKey           | 必须 用于验证管理员身份的密钥                 |
+| projectDescription | 必须 在照片墙头部显示的介绍文本                |
+| projectName        | 必须 在照片墙头部及浏览器标题中显示的文本           |
+| tgBotToken         | 必须 用于存储照片的telegram机器人token      |
+| tgChannelID        | 必须 用于存储照片的telegram频道ID          |
+| trashTalk          | 可选 在验证通行密钥背景滚动显示的文本 使用`;`分割每条文本 |
 
-### How To Deploy
+#### API
 
-First Step: Fork the project.
+说明: 所有API请求体统一采用`FormData` 返回数据采用`JSON`
 
-Then...
+##### `POST /api/user/detail`
 
+###### Header
+
+| 字段名        | 类型     | 描述        |
+|------------|--------|-----------|
+| Access-Key | string | MD5后的通行密钥 |
+
+###### Response
+
+示例:
+```json
+
+```
+
+| 字段 | 类型 | 描述 |
+|----|----|----|
+|    |    |    |
+
+### AIP DOC Template
+##### `METHOD URL`
+
+###### Header
+
+| 字段 | 类型 | 描述 |
+|----|----|----|
+|    |    |    |
+
+###### Body
+
+| 字段 | 类型 | 描述 |
+|----|----|----|
+|    |    |    |
+
+###### Response
+
+示例:
+```json
+
+```
+
+| 字段 | 类型 | 描述 |
+|----|----|----|
+|    |    |    |
