@@ -477,7 +477,7 @@ export async function onRequest(context) {
     </footer>
 </div>
 <script>
-    const BannerList = ${JSON.stringify(env.trashTalk || '[]')};
+    const BannerList = ${JSON.stringify(env.trashTalk.split(';') || [])};
 
     document.addEventListener('DOMContentLoaded', async () => {
         adjustHeight();  // suit different environment
